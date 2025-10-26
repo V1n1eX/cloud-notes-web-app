@@ -1,0 +1,19 @@
+<h2>Welcome, {{ request.user.username }}</h2>
+
+<h3>Folders</h3>
+<ul>
+  {% for folder in folders %}
+    <li>{{ folder.name }}</li>
+  {% empty %}
+    <li>No folders yet</li>
+  {% endfor %}
+</ul>
+
+<h3>Loose Notes (Outside Folders)</h3>
+<ul>
+  {% for note in notes %}
+    <li>{{ note.title|default:"Untitled" }}</li>
+  {% empty %}
+    <li>No notes yet</li>
+  {% endfor %}
+</ul>

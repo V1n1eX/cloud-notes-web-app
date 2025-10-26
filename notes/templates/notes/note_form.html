@@ -1,0 +1,9 @@
+<h2>{{ action }} Note</h2>
+
+<form method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">{{ action }}</button>
+</form>
+
+<a href="{% url 'notes_home' %}">Back to Dashboard</a>
