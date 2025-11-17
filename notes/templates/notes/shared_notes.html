@@ -92,7 +92,7 @@
         </div>
         <div class="actions">
           <a href="{% url 'view_shared_note' item.note.id %}" class="btn">View</a>
-          {% if item.note.can_user_edit request.user %}
+          {% if item.note.owner == request.user %}
             <a href="{% url 'edit_shared_note' item.note.id %}" class="btn btn-secondary">Edit</a>
           {% endif %}
         </div>
