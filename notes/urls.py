@@ -18,4 +18,9 @@ urlpatterns = [
     path('permanent-delete/<int:note_id>/', views.permanent_delete, name='permanent_delete'),
     path('restore-folder/<int:folder_id>/', views.restore_folder, name='restore_folder'),
     path('permanent-delete-folder/<int:folder_id>/', views.permanent_delete_folder, name='permanent_delete_folder'),
+    path('share/<int:note_id>/', views.share_note, name='share_note'),
+    path('shared/', views.shared_notes, name='shared_notes'),
+    path('shared/view/<int:note_id>/', views.view_shared_note, name='view_shared_note'),
+    path('shared/edit/<int:note_id>/', views.edit_shared_note, name='edit_shared_note'),
+    path('remove-share/<int:note_id>/<int:user_id>/', views.remove_share, name='remove_share'),
 ]

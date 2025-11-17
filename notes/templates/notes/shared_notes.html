@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shared Notes</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f9fafc;
+      color: #222;
+      margin: 0;
+      padding: 0 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .notes-container {
+      max-width: 1000px;
+      margin: 2rem auto;
+    }
+
+    .note-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .note-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 0.25rem;
+    }
+
+    .note-content {
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .note-meta {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .actions {
+      text-align: right;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #007bff;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-left: 0.5rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    @media (min-width: 600px) {
+      body {
+        padding: 0 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Shared Notes</h1>
+
+  <div class="notes-container">
+    {% for item in notes %}
+      <div class="note-card">
+        <div class="note-title">{{ item.note.title }}</div>
+        <div class="note-content">{{ item.note.content|truncatewords:50 }}</div>
+        <div class="note-meta">
+          <p><strong>Owner:</strong> {{ item.note.owner.username }}</p>
+          <p><strong>Shared At:</strong> {{ item.shared_at|date:"F j, Y, g:i a" }}</p>
+        </div>
+        <div class="actions">
+          <a href="{% url 'view_shared_note' item.note.id %}" class="btn">View</a>
+          {% if item.note.can_user_edit request.user %}
+            <a href="{% url 'edit_shared_note' item.note.id %}" class="btn btn-secondary">Edit</a>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p>No shared notes.</p>
+    {% endfor %}
+  </div>
+
+  <div style="text-align: center; margin-top: 2rem;">
+    <a href="{% url 'notes_home' %}" class="btn btn-secondary">Back to Home</a>
+  </div>
+
+</body>
+</html>

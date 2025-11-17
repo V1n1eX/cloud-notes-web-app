@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ note.title }}</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f9fafc;
+      color: #222;
+      margin: 0;
+      padding: 0 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .note-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .note-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 0.5rem;
+    }
+
+    .note-content {
+      line-height: 1.6;
+      white-space: pre-wrap;
+      margin-bottom: 2rem;
+    }
+
+    .note-meta {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .actions {
+      text-align: center;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #007bff;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-size: 1rem;
+      margin: 0 0.5rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    @media (min-width: 600px) {
+      body {
+        padding: 0 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>{{ note.title }}</h1>
+
+  <div class="note-container">
+    <div class="note-meta">
+      <p><strong>Owner:</strong> {{ note.owner.username }}</p>
+      <p><strong>Created:</strong> {{ note.created_at|date:"F j, Y, g:i a" }}</p>
+      {% if note.updated_at %}
+        <p><strong>Last Updated:</strong> {{ note.updated_at|date:"F j, Y, g:i a" }}</p>
+      {% endif %}
+      {% if note.folder %}
+        <p><strong>Folder:</strong> {{ note.folder.name }}</p>
+      {% endif %}
+    </div>
+
+    <div class="note-content">
+      {{ note.content }}
+    </div>
+
+    <div class="actions">
+      {% if can_edit %}
+        <a href="{% url 'edit_shared_note' note.id %}" class="btn">Edit Note</a>
+      {% endif %}
+      <a href="{% url 'shared_notes' %}" class="btn btn-secondary">Back to Shared Notes</a>
+    </div>
+  </div>
+
+</body>
+</html>

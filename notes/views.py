@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Note, Folder
-from .forms import NoteForm
+from .models import Note, Folder, NoteShare
+from .forms import NoteForm, ShareNoteForm
 from django.utils import timezone
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def notes_home(request):
     user = request.user
@@ -181,4 +183,68 @@ def permanent_delete_folder(request, folder_id):
     folder = get_object_or_404(Folder, id=folder_id, owner=request.user, is_deleted=True)
     folder.delete()
     return redirect('recycle_bin')
+
+@login_required
+def share_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id, owner=request.user)
+    if request.method == 'POST':
+        form = ShareNoteForm(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['username']
+            permission = form.cleaned_data['permission']
+            NoteShare.objects.get_or_create(
+                note=note,
+                user=user,
+                defaults={'permission': permission, 'shared_by': request.user}
+            )
+            messages.success(request, f"Note shared with {user.username}.")
+            return redirect('view_note', note_id=note.id)
+    else:
+        form = ShareNoteForm()
+    return render(request, 'notes/share_note.html', {'form': form, 'note': note})
+
+@login_required
+def shared_notes(request):
+    shared_notes = Note.objects.filter(shares__user=request.user).distinct()
+    shared_notes_with_dates = []
+    for note in shared_notes:
+        share = note.shares.filter(user=request.user).first()
+        shared_notes_with_dates.append({
+            'note': note,
+            'shared_at': share.shared_at if share else None
+        })
+    return render(request, 'notes/shared_notes.html', {'notes': shared_notes_with_dates})
+
+@login_required
+def view_shared_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    if not note.can_user_view(request.user):
+        messages.error(request, "You do not have permission to view this note.")
+        return redirect('notes_home')
+    can_edit = note.can_user_edit(request.user)
+    return render(request, 'notes/view_shared_note.html', {'note': note, 'can_edit': can_edit})
+
+@login_required
+def edit_shared_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    if not note.can_user_edit(request.user):
+        messages.error(request, "You do not have permission to edit this note.")
+        return redirect('view_shared_note', note_id=note.id)
+    if request.method == 'POST':
+        form = NoteForm(request.POST, instance=note)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Note updated successfully.")
+            return redirect('view_shared_note', note_id=note.id)
+    else:
+        form = NoteForm(instance=note)
+    return render(request, 'notes/edit_shared_note.html', {'form': form, 'note': note})
+
+@login_required
+def remove_share(request, note_id, user_id):
+    note = get_object_or_404(Note, id=note_id, owner=request.user)
+    share = get_object_or_404(NoteShare, note=note, user_id=user_id)
+    share.delete()
+    messages.success(request, "Share removed.")
+    return redirect('view_note', note_id=note.id)
 

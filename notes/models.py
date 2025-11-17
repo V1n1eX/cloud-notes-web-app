@@ -24,3 +24,26 @@ class Note(models.Model):
 
     def __str__(self):
         return self.title or "Untitled"
+
+    def can_user_view(self, user):
+        return self.owner == user or self.shares.filter(user=user).exists()
+
+    def can_user_edit(self, user):
+        return self.owner == user or self.shares.filter(user=user, permission='write').exists()
+
+class NoteShare(models.Model):
+    PERMISSION_CHOICES = [
+        ('read', 'Read Only'),
+        ('write', 'Read and Write'),
+    ]
+    note = models.ForeignKey(Note, related_name='shares', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    permission = models.CharField(max_length=10, choices=PERMISSION_CHOICES, default='read')
+    shared_by = models.ForeignKey(User, related_name='shared_notes', on_delete=models.CASCADE)
+    shared_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('note', 'user')
+
+    def __str__(self):
+        return f"{self.note.title} shared with {self.user.username} ({self.permission})"
