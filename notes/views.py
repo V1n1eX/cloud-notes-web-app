@@ -3,21 +3,26 @@ from .models import Note, Folder
 from .forms import NoteForm
 from django.utils import timezone
 
-# Create Note
-
 def notes_home(request):
     user = request.user
     if not user.is_authenticated:
         return redirect('/accounts/login/')
-    
-    folders = Folder.objects.filter(owner=user)
+
+    folders = Folder.objects.filter(owner=user, is_deleted=False)
     notes = Note.objects.filter(owner=user, folder__isnull=True, is_deleted=False)
+
+    sort_by = request.GET.get('sort', 'time')
+    if sort_by == 'name':
+        notes = notes.order_by('title')
+    else:  # default to 'time'
+        notes = notes.order_by('-updated_at')
 
     context = {
         'folders': folders,
-        'notes': notes
+        'notes': notes,
+        'current_sort': sort_by
     }
-    return render(request, 'notes/dashboard.html', context)
+    return render(request, 'notes/notes_home.html', context)
 
 
 
@@ -37,6 +42,11 @@ def create_note(request):
         form = NoteForm()
 
     return render(request, 'notes/note_form.html', {'form': form, 'action': 'Create'})
+
+# View Note
+def view_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id, owner=request.user)
+    return render(request, 'notes/view_note.html', {'note': note})
 
 # Edit Note
 def edit_note(request, note_id):
@@ -58,3 +68,117 @@ def delete_note(request, note_id):
     note.deleted_at = timezone.now()
     note.save()
     return redirect('notes_home')
+
+# Create Folder
+def create_folder(request):
+    if not request.user.is_authenticated:
+        return redirect('/accounts/login/')
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        if name:
+            Folder.objects.create(name=name, owner=request.user)
+            return redirect('notes_home')
+    return render(request, 'notes/folder_form.html')
+
+# Edit Folder
+def edit_folder(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id, owner=request.user)
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        if name:
+            folder.name = name
+            folder.save()
+            return redirect('notes_home')
+    return render(request, 'notes/folder_form.html', {'folder': folder})
+
+# Delete Folder
+def delete_folder(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id, owner=request.user)
+    folder.is_deleted = True
+    folder.deleted_at = timezone.now()
+    folder.save()
+    return redirect('notes_home')
+
+# Folder Detail
+def folder_detail(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id, owner=request.user, is_deleted=False)
+    notes = Note.objects.filter(owner=request.user, folder=folder, is_deleted=False)
+
+    sort_by = request.GET.get('sort', 'time')
+    if sort_by == 'name':
+        notes = notes.order_by('title')
+    else:  # default to 'time'
+        notes = notes.order_by('-updated_at')
+
+    context = {
+        'folder': folder,
+        'notes': notes,
+        'current_sort': sort_by
+    }
+    return render(request, 'notes/folder_detail.html', context)
+
+# Create Note in Folder
+def create_note_in_folder(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id, owner=request.user)
+    if request.method == 'POST':
+        form = NoteForm(request.POST)
+        if form.is_valid():
+            note = form.save(commit=False)
+            note.owner = request.user
+            note.folder = folder
+            note.save()
+            return redirect('folder_detail', folder_id=folder_id)
+    else:
+        form = NoteForm(initial={'folder': folder})
+    return render(request, 'notes/note_form.html', {'form': form, 'action': 'Create', 'folder': folder})
+
+# Move Note
+def move_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id, owner=request.user, is_deleted=False)
+    if request.method == 'POST':
+        folder_id = request.POST.get('folder')
+        if folder_id:
+            folder = get_object_or_404(Folder, id=folder_id, owner=request.user)
+            note.folder = folder
+        else:
+            note.folder = None
+        note.save()
+        return redirect('notes_home')
+    folders = Folder.objects.filter(owner=request.user)
+    return render(request, 'notes/move_note.html', {'note': note, 'folders': folders})
+
+# Recycle Bin
+def recycle_bin(request):
+    notes = Note.objects.filter(owner=request.user, is_deleted=True)
+    folders = Folder.objects.filter(owner=request.user, is_deleted=True)
+    return render(request, 'notes/recycle_bin.html', {'notes': notes, 'folders': folders})
+
+# Restore Note
+def restore_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id, owner=request.user, is_deleted=True)
+    note.is_deleted = False
+    note.deleted_at = None
+    note.save()
+    return redirect('recycle_bin')
+
+# Permanent Delete
+def permanent_delete(request, note_id):
+    note = get_object_or_404(Note, id=note_id, owner=request.user, is_deleted=True)
+    note.delete()
+    return redirect('recycle_bin')
+
+# Restore Folder
+def restore_folder(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id, owner=request.user, is_deleted=True)
+    folder.is_deleted = False
+    folder.deleted_at = None
+    folder.save()
+    return redirect('recycle_bin')
+
+# Permanent Delete Folder
+def permanent_delete_folder(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id, owner=request.user, is_deleted=True)
+    folder.delete()
+    return redirect('recycle_bin')
+

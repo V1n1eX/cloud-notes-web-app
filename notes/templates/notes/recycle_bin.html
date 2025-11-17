@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recycle Bin</title>
+  <style>
+	body {
+	  font-family: 'Poppins', sans-serif;
+	  background: #f9fafc;
+	  color: #222;
+	  margin: 0;
+	  padding: 0 1rem;
+	}
+
+	h1 {
+	  text-align: center;
+	  margin-top: 1rem;
+	}
+
+	.section {
+	  margin-top: 2rem;
+	}
+
+	.note-list {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 1rem;
+	}
+
+	.note-card {
+	  background: white;
+	  border-radius: 1rem;
+	  padding: 1rem;
+	  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+	}
+
+	.btn {
+	  display: inline-block;
+	  background: #007bff;
+	  color: white;
+	  padding: 0.6rem 1rem;
+	  border-radius: 0.6rem;
+	  text-decoration: none;
+	  font-size: 0.9rem;
+	  border: none;
+	  cursor: pointer;
+	}
+
+	.btn-small {
+	  padding: 0.4rem 0.8rem;
+	  font-size: 0.8rem;
+	  background: #6c757d;
+	}
+
+	.btn-success {
+	  background: #28a745;
+	}
+
+	.btn-danger {
+	  background: #dc3545;
+	}
+
+	.top-bar {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  margin-top: 1rem;
+	}
+
+	.actions {
+	  display: flex;
+	  gap: 0.5rem;
+	  flex-wrap: wrap;
+	  align-items: center;
+	}
+
+	.actions form {
+	  display: inline-block;
+	  margin: 0;
+	}
+
+	@media (min-width: 600px) {
+	  body {
+		padding: 0 2rem;
+	  }
+	}
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+	<h1>Recycle Bin</h1>
+	<a href="{% url 'notes_home' %}" class="btn">Back to Home</a>
+  </div>
+
+  <div class="section">
+	<h2>Deleted Notes</h2>
+	{% if notes %}
+	  <div class="note-list">
+		{% for note in notes %}
+		  <div class="note-card">
+			<h3>{{ note.title }}</h3>
+			<p>{{ note.content|truncatewords:20 }}</p>
+			<p><small>Deleted on: {{ note.deleted_at|date:"M d, Y H:i" }}</small></p>
+			<div class="actions">
+			  <a href="{% url 'view_note' note.id %}" class="btn-small">View</a>
+
+			  <form method="post" action="{% url 'restore_note' note.id %}">
+				{% csrf_token %}
+				<button type="submit" class="btn-small btn-success">Restore</button>
+			  </form>
+
+			  <form method="post" action="{% url 'permanent_delete' note.id %}" onsubmit="return confirm('Delete this note permanently?');">
+				{% csrf_token %}
+				<button type="submit" class="btn-small btn-danger">Delete Permanently</button>
+			  </form>
+			</div>
+		  </div>
+		{% endfor %}
+	  </div>
+	{% else %}
+	  <p>No deleted notes.</p>
+	{% endif %}
+  </div>
+
+  <div class="section">
+	<h2>Deleted Folders</h2>
+	{% if folders %}
+	  <div class="note-list">
+		{% for folder in folders %}
+		  <div class="note-card">
+			<h3>{{ folder.name }}</h3>
+			<p><small>Deleted on: {{ folder.deleted_at|date:"M d, Y H:i" }}</small></p>
+			<div class="actions">
+			  <form method="post" action="{% url 'restore_folder' folder.id %}">
+				{% csrf_token %}
+				<button type="submit" class="btn-small btn-success">Restore</button>
+			  </form>
+
+			  <form method="post" action="{% url 'permanent_delete_folder' folder.id %}" onsubmit="return confirm('Delete this folder permanently?');">
+				{% csrf_token %}
+				<button type="submit" class="btn-small btn-danger">Delete Permanently</button>
+			  </form>
+			</div>
+		  </div>
+		{% endfor %}
+	  </div>
+	{% else %}
+	  <p>No deleted folders.</p>
+	{% endif %}
+  </div>
+
+</body>
+</html>

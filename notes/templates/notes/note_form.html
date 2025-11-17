@@ -1,4 +1,4 @@
-<h2>{{ action }} Note</h2>
+<h2>{{ action }} Note{% if folder %} in "{{ folder.name }}"{% endif %}</h2>
 
 <form method="POST">
   {% csrf_token %}
@@ -6,4 +6,8 @@
   <button type="submit">{{ action }}</button>
 </form>
 
-<a href="{% url 'notes_home' %}">Back to Dashboard</a>
+{% if folder %}
+  <a href="{% url 'folder_detail' folder.id %}">Back to {{ folder.name }}</a>
+{% else %}
+  <a href="{% url 'notes_home' %}">Back to Dashboard</a>
+{% endif %}

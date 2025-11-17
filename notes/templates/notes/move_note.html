@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Move Note</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f9fafc;
+      color: #222;
+      margin: 0;
+      padding: 0 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .section {
+      margin-top: 2rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #007bff;
+      color: white;
+      padding: 0.6rem 1rem;
+      border-radius: 0.6rem;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+    }
+
+    @media (min-width: 600px) {
+      body {
+        padding: 0 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Move Note: {{ note.title }}</h1>
+
+  <div class="section">
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="folder">Select Folder:</label>
+        <select name="folder" id="folder">
+          <option value="">Move to Loose Notes (no folder)</option>
+          {% for folder in folders %}
+            <option value="{{ folder.id }}">{{ folder.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn">Move Note</button>
+    </form>
+    <br>
+    <a href="{% url 'notes_home' %}" class="btn btn-secondary">Cancel</a>
+  </div>
+
+</body>
+</html>

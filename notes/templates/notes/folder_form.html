@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if folder %}Edit{% else %}Create{% endif %} Folder</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f9fafc;
+      color: #222;
+      margin: 0;
+      padding: 0 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .form-container {
+      max-width: 400px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #007bff;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .actions {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    @media (min-width: 600px) {
+      body {
+        padding: 0 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>{% if folder %}Edit{% else %}Create{% endif %} Folder</h1>
+
+  <div class="form-container">
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="name">Folder Name:</label>
+        <input type="text" id="name" name="name" value="{% if folder %}{{ folder.name }}{% endif %}" required>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn">{% if folder %}Update{% else %}Create{% endif %} Folder</button>
+      </div>
+    </form>
+    <div class="actions">
+      <a href="{% url 'notes_home' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </div>
+
+</body>
+</html>
