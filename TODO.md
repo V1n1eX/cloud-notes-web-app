@@ -1,29 +1,37 @@
-# TODO List for Adding Sorting and Folder Recycle Bin Functionality
+# TODO List for Enhancing Note Sharing with Permissions, Owner, and Timestamp
 
-## 1. Update Folder Model
-- [x] Add `is_deleted` and `deleted_at` fields to Folder model in `notes/models.py`.
+## 1. Update shared_notes View (notes/views.py)
+- [x] Modify `shared_notes` view to pass permission and can_edit flag for each shared note.
 
-## 2. Create and Run Migration
-- [x] Run `python manage.py makemigrations` to create migration for Folder model changes.
-- [x] Run `python manage.py migrate` to apply the migration.
+## 2. Update shared_notes.html Template
+- [x] Display permission level (read/write) for each shared note.
+- [x] Show Edit button if user has write permission (not just owner).
+- [x] Change timestamp to note's updated_at instead of shared_at.
 
-## 3. Update Views (notes/views.py)
-- [x] Add sorting logic to `notes_home` view using `request.GET.get('sort')` for loose notes (sort by 'time' or 'name').
-- [x] Add sorting logic to `folder_detail` view using `request.GET.get('sort')` for notes in folder.
-- [x] Change `delete_folder` view to perform soft delete instead of hard delete.
-- [x] Add `restore_folder` view to restore a soft-deleted folder.
-- [x] Add `permanent_delete_folder` view to permanently delete a folder from recycle bin.
-- [x] Update `recycle_bin` view to include deleted folders in context.
+## 3. Update Share Note Form
+- [x] Add dropdown for user selection alongside username input.
+- [x] Allow sharing with no specific user (optional sharing).
+- [x] Update form validation to handle both input methods.
 
-## 4. Update URLs (notes/urls.py)
-- [x] Add URL patterns for `restore_folder` and `permanent_delete_folder`.
+## 4. Apply Dark Theme to Templates
+- [x] Update shared_notes.html with dark theme matching dashboard.
+- [x] Update share_note.html with dark theme matching dashboard.
+- [x] Update login.html with dark theme and JavaScript error messages.
+- [x] Update register.html with dark theme and JavaScript error messages.
+- [x] Update view_note.html with dark theme.
+- [x] Update folder_form.html with dark theme.
+- [x] Update recycle_bin.html with dark theme.
+- [x] Update note_form.html with dark theme.
+- [x] Update move_note.html with dark theme.
+- [x] Update view_shared_note.html with dark theme.
+- [x] Update edit_shared_note.html with dark theme.
+- [x] Update folder_detail.html with dark theme.
 
-## 5. Update Templates
-- [x] Update `notes/templates/notes_home.html`: Add sorting dropdown for loose notes.
-- [x] Update `notes/templates/notes/folder_detail.html`: Add sorting dropdown for notes in folder.
-- [x] Update `notes/templates/notes/recycle_bin.html`: Add section for deleted folders with restore/permanent delete actions.
-
-## 6. Testing and Verification
+## 5. Testing and Verification
 - [x] Server started successfully at http://127.0.0.1:8000/
-- [ ] Test sorting functionality for notes (by time and name) in notes_home and folder_detail.
-- [ ] Test folder soft delete, restore, and permanent delete from recycle bin.
+- [x] Created test users (testuser1, testuser2) and a shared note with read permission.
+- [ ] Test sharing notes with read and write permissions.
+- [ ] Verify shared notes list shows owner, permission, and correct timestamp.
+- [ ] Ensure Edit button appears for write permission users.
+- [ ] Test user selection dropdown and username input in share form.
+- [ ] Test login and register forms with dark theme and error messages.

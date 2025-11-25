@@ -5,10 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recycle Bin</title>
   <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --border: #334155;
+      --success: #10b981;
+      --success-hover: #059669;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
 	body {
 	  font-family: 'Poppins', sans-serif;
-	  background: #f9fafc;
-	  color: #222;
+	  background: var(--bg-primary);
+	  color: var(--text-primary);
 	  margin: 0;
 	  padding: 0 1rem;
 	}
@@ -16,6 +34,12 @@
 	h1 {
 	  text-align: center;
 	  margin-top: 1rem;
+	  color: var(--accent);
+	}
+
+	h2 {
+	  color: var(--accent);
+	  margin-bottom: 1rem;
 	}
 
 	.section {
@@ -29,36 +53,57 @@
 	}
 
 	.note-card {
-	  background: white;
+	  background: var(--bg-secondary);
 	  border-radius: 1rem;
 	  padding: 1rem;
-	  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+	  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	}
 
 	.btn {
 	  display: inline-block;
-	  background: #007bff;
-	  color: white;
+	  background: var(--accent);
+	  color: var(--bg-primary);
 	  padding: 0.6rem 1rem;
 	  border-radius: 0.6rem;
 	  text-decoration: none;
 	  font-size: 0.9rem;
 	  border: none;
 	  cursor: pointer;
+	  transition: background-color 0.2s;
+	  font-weight: 600;
+	}
+
+	.btn:hover {
+	  background: var(--accent-hover);
 	}
 
 	.btn-small {
 	  padding: 0.4rem 0.8rem;
 	  font-size: 0.8rem;
-	  background: #6c757d;
+	  background: #64748b;
+	  color: var(--text-primary);
+	}
+
+	.btn-small:hover {
+	  background: #475569;
 	}
 
 	.btn-success {
-	  background: #28a745;
+	  background: var(--success);
+	  color: white;
+	}
+
+	.btn-success:hover {
+	  background: var(--success-hover);
 	}
 
 	.btn-danger {
-	  background: #dc3545;
+	  background: var(--danger);
+	  color: white;
+	}
+
+	.btn-danger:hover {
+	  background: var(--danger-hover);
 	}
 
 	.top-bar {

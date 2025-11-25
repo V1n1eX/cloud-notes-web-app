@@ -5,10 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Shared Note</title>
   <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background: #f9fafc;
-      color: #222;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       margin: 0;
       padding: 0 1rem;
     }
@@ -16,15 +30,16 @@
     h1 {
       text-align: center;
       margin-top: 1rem;
+      color: var(--accent);
     }
 
     .form-container {
       max-width: 800px;
       margin: 2rem auto;
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 1rem;
       padding: 2rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .form-group {
@@ -35,15 +50,24 @@
       display: block;
       margin-bottom: 0.5rem;
       font-weight: bold;
+      color: var(--text-primary);
     }
 
     input[type="text"], textarea {
       width: 100%;
       padding: 0.75rem;
-      border: 1px solid #ccc;
+      border: 1px solid var(--border);
       border-radius: 0.5rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       font-size: 1rem;
       font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
     }
 
     textarea {
@@ -53,8 +77,8 @@
 
     .btn {
       display: inline-block;
-      background: #007bff;
-      color: white;
+      background: var(--accent);
+      color: var(--bg-primary);
       padding: 0.75rem 1.5rem;
       border-radius: 0.5rem;
       text-decoration: none;
@@ -62,10 +86,21 @@
       border: none;
       cursor: pointer;
       margin-right: 0.5rem;
+      transition: background-color 0.2s;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
     }
 
     .btn-secondary {
-      background: #6c757d;
+      background: #64748b;
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
     }
 
     @media (min-width: 600px) {

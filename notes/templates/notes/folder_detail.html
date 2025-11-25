@@ -5,10 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ folder.name }} - Notes</title>
   <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --border: #334155;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background: #f9fafc;
-      color: #222;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       margin: 0;
       padding: 0 1rem;
     }
@@ -16,6 +32,12 @@
     h1 {
       text-align: center;
       margin-top: 1rem;
+      color: var(--accent);
+    }
+
+    h2 {
+      color: var(--accent);
+      margin-bottom: 1rem;
     }
 
     .section {
@@ -29,33 +51,57 @@
     }
 
     .note-card {
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 1rem;
       padding: 1rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .btn {
       display: inline-block;
-      background: #007bff;
-      color: white;
+      background: var(--accent);
+      color: var(--bg-primary);
       padding: 0.6rem 1rem;
       border-radius: 0.6rem;
       text-decoration: none;
       font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
     }
 
     .btn-small {
       padding: 0.4rem 0.8rem;
       font-size: 0.8rem;
+      background: #64748b;
+      color: var(--text-primary);
+    }
+
+    .btn-small:hover {
+      background: #475569;
     }
 
     .btn-secondary {
-      background: #6c757d;
+      background: #64748b;
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
     }
 
     .btn-danger {
-      background: #dc3545;
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger-hover);
     }
 
     .top-bar {
@@ -69,6 +115,31 @@
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
+    }
+
+    .sort-container {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      color: var(--text-primary);
+      font-weight: 500;
+      margin-right: 0.5rem;
+    }
+
+    select {
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
     }
 
     @media (min-width: 600px) {

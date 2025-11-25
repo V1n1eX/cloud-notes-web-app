@@ -188,9 +188,9 @@ def permanent_delete_folder(request, folder_id):
 def share_note(request, note_id):
     note = get_object_or_404(Note, id=note_id, owner=request.user)
     if request.method == 'POST':
-        form = ShareNoteForm(request.POST)
+        form = ShareNoteForm(request.POST, current_user=request.user)
         if form.is_valid():
-            user = form.cleaned_data['username']
+            user = form.cleaned_data['user']
             permission = form.cleaned_data['permission']
             NoteShare.objects.get_or_create(
                 note=note,
@@ -200,20 +200,23 @@ def share_note(request, note_id):
             messages.success(request, f"Note shared with {user.username}.")
             return redirect('view_note', note_id=note.id)
     else:
-        form = ShareNoteForm()
+        form = ShareNoteForm(current_user=request.user)
     return render(request, 'notes/share_note.html', {'form': form, 'note': note})
 
 @login_required
 def shared_notes(request):
     shared_notes = Note.objects.filter(shares__user=request.user).distinct()
-    shared_notes_with_dates = []
+    shared_notes_with_info = []
     for note in shared_notes:
         share = note.shares.filter(user=request.user).first()
-        shared_notes_with_dates.append({
+        can_edit = note.can_user_edit(request.user)
+        shared_notes_with_info.append({
             'note': note,
-            'shared_at': share.shared_at if share else None
+            'permission': share.permission if share else 'read',
+            'can_edit': can_edit,
+            'timestamp': note.updated_at
         })
-    return render(request, 'notes/shared_notes.html', {'notes': shared_notes_with_dates})
+    return render(request, 'notes/shared_notes.html', {'notes': shared_notes_with_info})
 
 @login_required
 def view_shared_note(request, note_id):

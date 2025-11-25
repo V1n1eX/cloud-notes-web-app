@@ -1,0 +1,7 @@
+<div class="form-group">
+        <label for="{{ form.user_select.id_for_label }}">{{ form.user_select.label }}</label>
+        {{ form.user_select }}
+        {% if form.user_select.errors %}
+          <div class="error">{{ form.user_select.errors }}</div>
+        {% endif %}
+      </div>
