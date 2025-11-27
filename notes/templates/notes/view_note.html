@@ -135,6 +135,7 @@
     <div class="actions">
       <a href="{% url 'edit_note' note.id %}" class="btn">Edit Note</a>
       <a href="{% url 'share_note' note.id %}" class="btn btn-secondary">Share Note</a>
+      <a href="{% url 'summarize_note' note.id %}" class="btn btn-secondary">Summarize Note</a>
       <a href="{% url 'move_note' note.id %}" class="btn btn-secondary">Move Note</a>
       <a href="{% url 'delete_note' note.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this note?')">Delete Note</a>
       <a href="{% url 'notes_home' %}" class="btn btn-secondary">Back to Home</a>

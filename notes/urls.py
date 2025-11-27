@@ -23,4 +23,6 @@ urlpatterns = [
     path('shared/view/<int:note_id>/', views.view_shared_note, name='view_shared_note'),
     path('shared/edit/<int:note_id>/', views.edit_shared_note, name='edit_shared_note'),
     path('remove-share/<int:note_id>/<int:user_id>/', views.remove_share, name='remove_share'),
+    path('summarize/<int:note_id>/', views.summarize_note, name='summarize_note'),
+    path('save-summary/<int:note_id>/', views.save_summary, name='save_summary'),
 ]

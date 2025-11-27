@@ -1,3 +1,5 @@
+import requests
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Note, Folder, NoteShare
 from .forms import NoteForm, ShareNoteForm
@@ -250,4 +252,71 @@ def remove_share(request, note_id, user_id):
     share.delete()
     messages.success(request, "Share removed.")
     return redirect('view_note', note_id=note.id)
+
+@login_required
+def summarize_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id, owner=request.user)
+    if not note.content:
+        summary = "Note has no content to summarize."
+    else:
+        url = "https://api.together.xyz/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {settings.TOGETHER_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+            "messages": [
+                {"role": "user", "content": f"Summarize the following note: {note.content}"}
+            ]
+        }
+        try:
+            response = requests.post(url, headers=headers, json=data, timeout=30)
+            if response.status_code == 200:
+                summary = response.json()['choices'][0]['message']['content']
+            else:
+                summary = f"Error: {response.status_code} - {response.text}"
+        except requests.RequestException as e:
+            summary = f"Request failed: {str(e)}"
+
+    return render(request, 'notes/summarize_note.html', {'note': note, 'summary': summary})
+
+@login_required
+def save_summary(request, note_id):
+    note = get_object_or_404(Note, id=note_id, owner=request.user)
+    if not note.content:
+        summary = "Note has no content to summarize."
+    else:
+        url = "https://api.together.xyz/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {settings.TOGETHER_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+            "messages": [
+                {"role": "user", "content": f"Summarize the following note: {note.content}"}
+            ]
+        }
+        try:
+            response = requests.post(url, headers=headers, json=data, timeout=30)
+            if response.status_code == 200:
+                summary = response.json()['choices'][0]['message']['content']
+            else:
+                summary = f"Error: {response.status_code} - {response.text}"
+        except requests.RequestException as e:
+            summary = f"Request failed: {str(e)}"
+
+    if request.method == 'POST':
+        form = NoteForm(request.POST)
+        if form.is_valid():
+            new_note = form.save(commit=False)
+            new_note.owner = request.user
+            new_note.save()
+            messages.success(request, "Summary saved as a new note.")
+            return redirect('notes_home')
+    else:
+        form = NoteForm(initial={'title': f"Summary of {note.title}", 'content': summary})
+
+    return render(request, 'notes/save_summary.html', {'note': note, 'form': form})
 
