@@ -32,7 +32,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-t1eged!+-)p0sj#oz!47wrh!gd
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1')
 
 # Allow hosts from env, comma-separated
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,cloud_notes_app.onrender.com').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,cloud-notes-web-app.onrender.com').split(',')
 ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS if h.strip()]
 
 
