@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 class Folder(models.Model):
     name = models.CharField(max_length=200)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    tags = models.TextField(null=True, blank=True)  # Comma-separated tags
     is_deleted = models.BooleanField(default=False)  # For recycle bin
     deleted_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -17,6 +18,7 @@ class Note(models.Model):
     folder = models.ForeignKey(Folder, on_delete=models.SET_NULL, null=True, blank=True)  # Nullable
     title = models.CharField(max_length=200, null=True, blank=True)
     content = models.TextField(null=True, blank=True)
+    tags = models.TextField(null=True, blank=True)  # Comma-separated tags
     is_deleted = models.BooleanField(default=False)  # For recycle bin
     deleted_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

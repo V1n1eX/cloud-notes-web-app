@@ -149,6 +149,34 @@
       background: #475569; /* Slate 600 */
     }
 
+    /* --- Autocomplete Suggestions --- */
+    .autocomplete-suggestions {
+      position: absolute;
+      background: var(--bg-medium);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      width: 100%;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+    .autocomplete-suggestion {
+      padding: 0.75rem;
+      cursor: pointer;
+      color: var(--text-light);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .autocomplete-suggestion:hover {
+      background: var(--bg-dark);
+    }
+
+    .autocomplete-suggestion:last-child {
+      border-bottom: none;
+    }
+
     /* --- Responsive Breakpoints --- */
 
     /* Tablet */
@@ -175,10 +203,18 @@
       {% csrf_token %}
       <div class="form-group">
         <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
-        {{ form.username }}
+        <div style="display: flex; gap: 0.5rem;">
+          {{ form.username }}
+          <button type="button" id="search-btn" class="btn btn-primary" style="padding: 0.75rem 1rem; white-space: nowrap;">Search</button>
+        </div>
         {% if form.username.errors %}
           <div class="error">{{ form.username.errors }}</div>
         {% endif %}
+      </div>
+
+      <div id="search-results" class="form-group" style="display: none;">
+        <label>Search Results:</label>
+        <div id="results-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-dark); padding: 0.5rem;"></div>
       </div>
       
       <div class="form-group">
@@ -192,6 +228,73 @@
       <a href="{% url 'view_note' note.id %}" class="btn btn-secondary">Cancel</a>
     </form>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const usernameInput = document.gvgetElementById('search-results');
+      const resultsList = document.getElementById('results-list');
+
+      // Search button click handler
+      searchBtn.addEventListener('click', function() {
+        const query = usernameInput.value.trim();
+        if (query.length < 1) {
+          searchResults.style.display = 'none';
+          return;
+        }
+
+        // Show loading
+        resultsList.innerHTML = '<div style="color: var(--text-medium); padding: 0.5rem;">Searching...</div>';
+        searchResults.style.display = 'block';
+
+        // Fetch search results
+        fetch(`{% url 'user_search' %}?q=${encodeURIComponent(query)}`)
+          .then(response => response.json())
+          .then(data => {
+            resultsList.innerHTML = '';
+
+            if (data.length === 0) {
+              resultsList.innerHTML = '<div style="color: var(--text-medium); padding: 0.5rem;">No users found.</div>';
+              return;
+            }
+
+            data.forEach(username => {
+              const resultItem = document.createElement('div');
+              resultItem.style.cssText = `
+                padding: 0.75rem;
+                cursor: pointer;
+                color: var(--text-light);
+                border-bottom: 1px solid var(--border-light);
+                transition: background 0.2s ease;
+              `;
+              resultItem.textContent = username;
+              resultItem.addEventListener('click', () => {
+                usernameInput.value = username;
+                searchResults.style.display = 'none';
+              });
+              resultItem.addEventListener('mouseover', () => {
+                resultItem.style.background = 'var(--bg-medium)';
+              });
+              resultItem.addEventListener('mouseout', () => {
+                resultItem.style.background = 'var(--bg-dark)';
+              });
+              resultsList.appendChild(resultItem);
+            });
+          })
+          .catch(error => {
+            console.error('Error fetching search results:', error);
+            resultsList.innerHTML = '<div style="color: var(--danger-red); padding: 0.5rem;">Error searching users.</div>';
+          });
+      });
+
+      // Allow Enter key to trigger search
+      usernameInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          searchBtn.click();
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>

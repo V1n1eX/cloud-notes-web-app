@@ -1,19 +1,33 @@
 import requests
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import models
 from .models import Note, Folder, NoteShare
 from .forms import NoteForm, ShareNoteForm
 from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 def notes_home(request):
     user = request.user
     if not user.is_authenticated:
         return redirect('/accounts/login/')
 
+    query = request.GET.get('q', '').strip()
     folders = Folder.objects.filter(owner=user, is_deleted=False)
     notes = Note.objects.filter(owner=user, folder__isnull=True, is_deleted=False)
+
+    if query:
+        # Search folders by name and tags
+        folders = folders.filter(
+            models.Q(name__icontains=query) | models.Q(tags__icontains=query)
+        )
+        # Search notes by title, content, and tags
+        notes = notes.filter(
+            models.Q(title__icontains=query) | models.Q(content__icontains=query) | models.Q(tags__icontains=query)
+        )
 
     sort_by = request.GET.get('sort', 'time')
     if sort_by == 'name':
@@ -24,7 +38,8 @@ def notes_home(request):
     context = {
         'folders': folders,
         'notes': notes,
-        'current_sort': sort_by
+        'current_sort': sort_by,
+        'query': query
     }
     return render(request, 'notes/notes_home.html', context)
 
@@ -49,6 +64,8 @@ def create_note(request):
 
 # View Note
 def view_note(request, note_id):
+    if not request.user.is_authenticated:
+        return render(request, 'notes/login_required.html')
     note = get_object_or_404(Note, id=note_id, owner=request.user)
     return render(request, 'notes/view_note.html', {'note': note})
 
@@ -192,7 +209,7 @@ def share_note(request, note_id):
     if request.method == 'POST':
         form = ShareNoteForm(request.POST, current_user=request.user)
         if form.is_valid():
-            user = form.cleaned_data['user']
+            user = form.cleaned_data['username']
             permission = form.cleaned_data['permission']
             NoteShare.objects.get_or_create(
                 note=note,
@@ -204,6 +221,16 @@ def share_note(request, note_id):
     else:
         form = ShareNoteForm(current_user=request.user)
     return render(request, 'notes/share_note.html', {'form': form, 'note': note})
+
+@login_required
+def user_search(request):
+    query = request.GET.get('q', '').strip()
+    if query:
+        users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)[:10]
+        usernames = [user.username for user in users]
+    else:
+        usernames = []
+    return JsonResponse(usernames, safe=False)
 
 @login_required
 def shared_notes(request):

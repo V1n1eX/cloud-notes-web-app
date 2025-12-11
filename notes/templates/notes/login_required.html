@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Required</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+    /* --- Root & Reset --- */
+    :root {
+      --bg-dark: #0f172a;      /* Slate 900 */
+      --bg-medium: #1e293b;   /* Slate 800 */
+      --border-light: #334155; /* Slate 700 */
+      --text-light: #e2e8f0;    /* Slate 200 */
+      --text-medium: #94a3b8;   /* Slate 400 */
+      --brand-blue: #38bdf8;   /* Sky 400 */
+      --brand-blue-hover: #7dd3fc; /* Sky 300 */
+      --danger-red: #f43f5e;    /* Rose 500 */
+      --danger-red-hover: #fb7185; /* Rose 400 */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .message {
+      background: var(--bg-medium);
+      border-radius: 16px;
+      padding: 3rem;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+    h1 {
+      color: var(--brand-blue);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: var(--text-medium);
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      margin: 0.5rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .btn-primary {
+      background: var(--brand-blue);
+      color: var(--bg-dark);
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-blue-hover);
+    }
+
+    .btn-secondary {
+      background: var(--border-light);
+      color: var(--text-light);
+    }
+
+    .btn-secondary:hover {
+      background: #475569; /* Slate 600 */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="message">
+      <h1>Oops! Seems like this page is not for you</h1>
+      <p>Please login or register to access this content.</p>
+      <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+      <a href="{% url 'register' %}" class="btn btn-secondary">Register</a>
+    </div>
+  </div>
+</body>
+</html>

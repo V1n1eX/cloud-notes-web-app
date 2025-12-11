@@ -303,6 +303,13 @@
     <div class="top-bar">
       <h1>Welcome, {{ user.username }}</h1>
       <div class="actions">
+        <form method="get" style="display: flex; gap: 0.5rem; align-items: center;">
+          <input type="text" name="q" value="{{ query }}" placeholder="Search notes and folders..." style="padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-medium); color: var(--text-light); font-size: 0.9rem;">
+          <button type="submit" class="btn btn-primary">Search</button>
+          {% if query %}
+            <a href="{% url 'notes_home' %}" class="btn btn-secondary">Clear</a>
+          {% endif %}
+        </form>
         <a href="{% url 'create_note' %}" class="btn btn-primary">+ New Note</a>
         <a href="{% url 'create_folder' %}" class="btn btn-secondary">+ New Folder</a>
         <a href="{% url 'shared_notes' %}" class="btn btn-secondary">Shared Notes</a>
@@ -312,7 +319,7 @@
     </div>
 
     <div class="section">
-      <h2>Folders</h2>
+      <h2>Folders{% if query %} (Search Results){% endif %}</h2>
 
       {% if folders %}
         <div class="folder-grid">
@@ -329,7 +336,11 @@
           {% endfor %}
         </div>
       {% else %}
-        <p>You haven't created any folders yet.</p>
+        {% if query %}
+          <p>No folders match your search.</p>
+        {% else %}
+          <p>You haven't created any folders yet.</p>
+        {% endif %}
       {% endif %}
     </div>
 
